@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>総合技術監理 フラッシュカード学習 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Syne:wght@700;800&family=Oswald:wght@600;700&display=swap');
+:root{
+  --bg:#080c14;--bg2:#0e1420;--bg3:#141b2e;--bg4:#1a2238;
+  --c1:#00d4ff;--c2:#a78bfa;--c3:#f97316;--c4:#ff6b6b;--c5:#51cf66;
+  --text:#dde4f0;--text2:#7a8ba8;--text3:#4a5568;
+  --border:rgba(255,255,255,0.07);--r:14px;--r2:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 0%,rgba(0,212,255,0.04),transparent 60%),radial-gradient(ellipse 60% 40% at 90% 100%,rgba(123,94,167,0.05),transparent 60%);pointer-events:none;z-index:0;}
+
+/* ヘッダー */
+header{position:sticky;top:0;z-index:200;background:rgba(8,12,20,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:7px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.logo-mark{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:3px;color:var(--c1);line-height:1;}
+.logo-sub{display:none;}
+.hdr-right{display:flex;align-items:center;gap:12px;}
+.hdr-stats{display:flex;gap:10px;}
+.hstat{text-align:center;min-width:36px;}
+.hstat-v{font-size:15px;font-weight:700;line-height:1;}
+.hstat-l{font-size:9px;color:var(--text2);letter-spacing:1px;margin-top:2px;}
+.hstat-v.ok{color:var(--c5);}.hstat-v.ng{color:var(--c4);}.hstat-v.wk{color:#ffd43b;}
+.cal-btn{padding:6px 14px;border-radius:30px;border:1px solid rgba(0,212,255,0.3);background:rgba(0,212,255,0.06);color:var(--c1);font-size:11px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.cal-btn:hover{background:rgba(0,212,255,0.14);}
+
+/* アプリ全体 */
+.app{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:10px 14px 32px;gap:9px;max-width:720px;margin:0 auto;}
+
+/* 管理分野タブ */
+.domain-tabs{display:flex;flex-wrap:nowrap;gap:4px;justify-content:center;width:100%;overflow-x:auto;padding-bottom:2px;}
+.domain-tabs::-webkit-scrollbar{height:2px;}
+.domain-tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:1px;}
+.dtab{padding:4px 9px;border-radius:30px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:10px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.dtab:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+.dtab.a1.on{border-color:var(--c1);color:var(--c1);background:rgba(0,212,255,0.08);}
+.dtab.a2.on{border-color:var(--c2);color:var(--c2);background:rgba(167,139,250,0.08);}
+.dtab.a3.on{border-color:var(--c3);color:var(--c3);background:rgba(249,115,22,0.08);}
+.dtab.a4.on{border-color:var(--c4);color:var(--c4);background:rgba(255,107,107,0.08);}
+.dtab.a5.on{border-color:var(--c5);color:var(--c5);background:rgba(81,207,102,0.08);}
+.dtab.all.on{border-color:#ffd43b;color:#ffd43b;background:rgba(255,212,59,0.08);}
+.dtab.weak.on{border-color:var(--c4);color:var(--c4);background:rgba(255,107,107,0.1);}
+
+/* サブタブ */
+.sub-tabs{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;width:100%;min-height:20px;}
+.stab{padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg4);color:var(--text3);font-size:10px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all .2s;}
+.stab:hover{color:var(--text2);}
+.stab.on{border-color:rgba(255,255,255,0.2);color:var(--text);background:rgba(255,255,255,0.05);}
+
+/* 進捗 */
+.prog-wrap{width:100%;}
+.prog-info{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px;}
+.prog-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;transition:width .5s ease;}
+
+/* カード */
+.card-area{width:100%;perspective:1400px;}
+.card{width:100%;min-height:350px;position:relative;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,.2,.2,1),height .35s ease;cursor:pointer;user-select:none;}
+.card.flipped{transform:rotateY(180deg);}
+.face{position:absolute;top:0;left:0;width:100%;min-height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r2);padding:36px 32px;display:flex;flex-direction:column;}
+.face-b-measure{visibility:hidden;pointer-events:none;position:absolute;top:0;left:0;width:100%;padding:36px 32px;box-sizing:border-box;display:flex;flex-direction:column;border-radius:var(--r2);}
+.face-f{background:var(--bg2);border:1px solid var(--border);}
+.face-f::after{content:'';position:absolute;inset:0;border-radius:var(--r2);background:linear-gradient(135deg,rgba(255,255,255,0.02),transparent 60%);pointer-events:none;}
+.face-b{transform:rotateY(180deg);background:linear-gradient(145deg,#0a1628,#120d24);border:1px solid rgba(123,94,167,0.2);overflow-y:auto;}
+.card-domain{font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:6px;}
+.card-section{font-size:10px;color:var(--text2);margin-bottom:14px;letter-spacing:1px;}
+.card-kw{font-size:23px;font-weight:700;line-height:1.45;color:var(--text);flex:1;display:flex;align-items:center;}
+.card-hint{font-size:11px;color:var(--text2);margin-top:auto;padding-top:10px;}
+.card-tap{font-size:10px;color:var(--text3);text-align:center;margin-top:10px;letter-spacing:1px;}
+.weak-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;background:rgba(255,107,107,0.12);color:var(--c4);border-radius:20px;padding:2px 8px;margin-bottom:6px;width:fit-content;}
+.back-domain{font-size:11px;letter-spacing:2px;font-weight:700;margin-bottom:5px;}
+.back-kw{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.back-lbl{font-size:11px;letter-spacing:1.5px;font-weight:700;margin-bottom:7px;}
+.back-lbl.m{color:#60a5fa;}.back-lbl.t{color:#a78bfa;margin-top:16px;}
+.back-text{font-size:14px;line-height:1.9;}.back-text.t{color:#c4b5fd;}
+
+/* ボタン */
+.actions{display:flex;gap:10px;width:100%;justify-content:center;}
+.abtn{flex:1;max-width:155px;padding:11px 8px;border-radius:11px;border:none;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.abtn:hover{transform:translateY(-2px);}
+.a-ng{background:rgba(255,107,107,0.12);color:var(--c4);border:1px solid rgba(255,107,107,0.25);}
+.a-ng:hover{background:rgba(255,107,107,0.22);}
+.a-ok{background:rgba(81,207,102,0.12);color:var(--c5);border:1px solid rgba(81,207,102,0.25);}
+.a-ok:hover{background:rgba(81,207,102,0.22);}
+.a-skip{background:rgba(122,139,168,0.08);color:var(--text2);border:1px solid var(--border);}
+
+/* 完了 */
+.done{display:none;flex-direction:column;align-items:center;gap:18px;text-align:center;padding:36px 20px;width:100%;}
+.done.show{display:flex;}
+.done-emoji{font-size:52px;}
+.done-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;}
+.done-score{font-family:'Syne',sans-serif;font-size:60px;font-weight:800;line-height:1;}
+.done-detail{font-size:13px;color:var(--text2);line-height:2;}
+.done-restart{padding:12px 32px;border-radius:40px;border:none;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+.done-restart:hover{transform:translateY(-2px);}
+
+/* カラー */
+.c1{color:var(--c1);}.c2{color:var(--c2);}.c3{color:var(--c3);}.c4{color:var(--c4);}.c5{color:var(--c5);}
+.fill1{background:linear-gradient(90deg,var(--c1),#0099cc);}
+.fill2{background:linear-gradient(90deg,var(--c2),#7c3aed);}
+.fill3{background:linear-gradient(90deg,var(--c3),#ea580c);}
+.fill4{background:linear-gradient(90deg,var(--c4),#dc2626);}
+.fill5{background:linear-gradient(90deg,var(--c5),#16a34a);}
+.fillA{background:linear-gradient(90deg,#ffd43b,#f59e0b);}
+.done-score.c1{color:var(--c1);}.done-score.c2{color:var(--c2);}.done-score.c3{color:var(--c3);}.done-score.c4{color:var(--c4);}.done-score.c5{color:var(--c5);}
+.done-restart.c1{background:linear-gradient(135deg,var(--c1),#0077aa);color:#000;}
+.done-restart.c2{background:linear-gradient(135deg,var(--c2),#7c3aed);color:#fff;}
+.done-restart.c3{background:linear-gradient(135deg,var(--c3),#ea580c);color:#fff;}
+.done-restart.c4{background:linear-gradient(135deg,var(--c4),#dc2626);color:#fff;}
+.done-restart.c5{background:linear-gradient(135deg,var(--c5),#16a34a);color:#fff;}
+
+/* ══════════════════════════════════════
+   カレンダーモーダル
+══════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
+.modal-overlay.hidden{display:none!important;}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r2);padding:0;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.6);}
+
+/* モーダルヘッダー */
+.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--c1);letter-spacing:2px;}
+.modal-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+
+/* 試験日設定 */
+.exam-section{padding:16px 24px;border-bottom:1px solid var(--border);}
+.exam-label{font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;font-weight:500;}
+.exam-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.exam-input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:13px;padding:8px 12px;flex:1;min-width:140px;outline:none;transition:border-color .2s;}
+.exam-input:focus{border-color:var(--c1);}
+.exam-save-btn{padding:8px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--c1),#0099cc);color:#000;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.exam-save-btn:hover{opacity:.85;}
+.exam-clear-btn{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+.exam-clear-btn:hover{color:var(--c4);border-color:var(--c4);}
+.countdown-box{margin-top:10px;padding:12px 16px;border-radius:10px;border:1px solid rgba(0,212,255,0.2);background:rgba(0,212,255,0.05);display:none;}
+.countdown-box.show{display:flex;align-items:center;gap:12px;}
+.countdown-num{font-family:'Oswald',sans-serif;font-size:36px;font-weight:700;color:var(--c1);line-height:1;letter-spacing:2px;}
+.countdown-label{font-size:12px;color:var(--text2);line-height:1.6;}
+.countdown-label strong{color:var(--text);display:block;font-size:13px;}
+
+/* カレンダー本体 */
+.cal-section{padding:16px 24px 20px;}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);}
+.cal-nav-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.cal-nav-btn:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-dow{text-align:center;font-size:10px;color:var(--text2);padding:4px 0;letter-spacing:1px;font-weight:500;}
+.cal-dow.sun{color:#ff6b6b;}.cal-dow.sat{color:#60a5fa;}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:default;transition:background .15s;}
+.cal-day.other-month{opacity:.25;}
+.cal-day.today{background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.3);}
+.cal-day.exam-day{background:rgba(255,107,107,0.15);border:1px solid rgba(255,107,107,0.5);}
+.cal-day.has-data{cursor:pointer;}
+.cal-day.has-data:hover{background:rgba(255,255,255,0.06);}
+.cal-day-num{font-size:12px;font-weight:500;line-height:1;color:var(--text);}
+.cal-day.other-month .cal-day-num{color:var(--text3);}
+.cal-day.today .cal-day-num{color:var(--c1);font-weight:700;}
+.cal-day.exam-day .cal-day-num{color:var(--c4);font-weight:700;}
+.cal-day-dot{width:5px;height:5px;border-radius:50%;margin-top:3px;}
+
+/* 学習量に応じたグラデーション */
+.dot-lv1{background:#1e4060;}
+.dot-lv2{background:#1a6080;}
+.dot-lv3{background:#10a0c0;}
+.dot-lv4{background:var(--c1);}
+
+/* 日別詳細ポップアップ */
+.day-popup{position:fixed;background:var(--bg3);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,0.5);z-index:600;pointer-events:none;min-width:160px;display:none;}
+.day-popup.show{display:block;}
+.day-popup-date{font-size:11px;color:var(--c1);font-weight:700;margin-bottom:6px;letter-spacing:1px;}
+.day-popup-row{display:flex;justify-content:space-between;gap:16px;margin-top:3px;}
+.day-popup-lbl{color:var(--text2);}
+.day-popup-val{font-weight:700;}
+
+/* 月間サマリー */
+.month-summary{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ms-card{background:var(--bg3);border-radius:10px;padding:10px;text-align:center;}
+.ms-val{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--c1);letter-spacing:1px;}
+.ms-lbl{font-size:10px;color:var(--text2);margin-top:2px;letter-spacing:0.5px;}
+
+/* 連続学習 */
+.streak-bar{margin-top:12px;padding:12px 16px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;gap:12px;}
+.streak-icon{font-size:22px;}
+.streak-info{flex:1;}
+.streak-val{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#ffd43b;letter-spacing:1px;}
+.streak-lbl{font-size:11px;color:var(--text2);margin-top:1px;}
+
+.hidden{display:none!important;}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card-area{animation:cardIn .3s ease;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo-mark">KANRI FLASH <span style="color:#ffd43b;font-size:12px;letter-spacing:1px;">2026</span></div>
+    <div class="logo-sub">総合技術監理 キーワード学習 2026</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-stats">
+      <div class="hstat"><div class="hstat-v ok" id="h-ok">0</div><div class="hstat-l">正解</div></div>
+      <div class="hstat"><div class="hstat-v ng" id="h-ng">0</div><div class="hstat-l">不正解</div></div>
+      <div class="hstat"><div class="hstat-v wk" id="h-wk">0</div><div class="hstat-l">苦手</div></div>
+    </div>
+    <button class="cal-btn" onclick="openCal()">📅 カレンダー</button>
+  </div>
+</header>
+
+<div class="app">
+  <div class="domain-tabs">
+    <button class="dtab all on" onclick="setDomain('all',this)">🗂 全分野</button>
+    <button class="dtab a1" onclick="setDomain('1',this)">① 経済性</button>
+    <button class="dtab a2" onclick="setDomain('2',this)">② 人的資源</button>
+    <button class="dtab a3" onclick="setDomain('3',this)">③ 情報</button>
+    <button class="dtab a4" onclick="setDomain('4',this)">④ 安全</button>
+    <button class="dtab a5" onclick="setDomain('5',this)">⑤ 社会環境</button>
+    <button class="dtab weak" onclick="setDomain('weak',this)">🔥 苦手</button>
+  </div>
+  <div class="sub-tabs" id="sub-tabs"></div>
+  <div class="prog-wrap">
+    <div class="prog-info"><span id="p-label">0 / 0</span><span id="p-pct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill fillA" id="p-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="card-area" id="card-area">
+    <div class="card" id="card" onclick="flip()">
+      <div class="face face-f" id="face-f">
+        <div id="f-domain" class="card-domain"></div>
+        <div id="f-section" class="card-section"></div>
+        <div class="card-kw" id="f-kw">読み込み中...</div>
+        <div id="f-hint" class="card-hint"></div>
+        <div class="card-tap">タップして意味を確認 ▼</div>
+      </div>
+      <div class="face face-b" id="face-b">
+        <div id="b-domain" class="back-domain"></div>
+        <div id="b-kw" class="back-kw"></div>
+        <div class="back-lbl m">意味・概要</div>
+        <div id="b-meaning" class="back-text"></div>
+        <div class="back-lbl t">📌 対策のポイント</div>
+        <div id="b-taisaku" class="back-text t"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="abtn a-ng" onclick="judge(false)">✗ 覚えていない</button>
+    <button class="abtn a-skip" onclick="skip()">→ スキップ</button>
+    <button class="abtn a-ok" onclick="judge(true)">✓ 覚えた！</button>
+  </div>
+
+  <div class="done" id="done">
+    <div class="done-emoji" id="done-emoji">🎉</div>
+    <div class="done-title">セット完了！</div>
+    <div class="done-score" id="done-score">—%</div>
+    <div class="done-detail" id="done-detail"></div>
+    <button class="done-restart" id="done-restart" onclick="restart()">もう一度チャレンジ</button>
+  </div>
+</div>
+
+<!-- カレンダーモーダル -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="bgClose(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-title">📅 STUDY CALENDAR</div>
+      <button class="modal-close" onclick="closeCal()">✕</button>
+    </div>
+
+    <!-- 試験日設定 -->
+    <div class="exam-section">
+      <div class="exam-label">🎯 試験日登録</div>
+      <div class="exam-row">
+        <input type="date" class="exam-input" id="exam-date-input">
+        <button class="exam-save-btn" onclick="saveExamDate()">登録</button>
+        <button class="exam-clear-btn" onclick="clearExamDate()">解除</button>
+      </div>
+      <div class="countdown-box" id="countdown-box">
+        <div class="countdown-num" id="countdown-num">0</div>
+        <div class="countdown-label">
+          <strong id="countdown-exam-date">—</strong>
+          試験まであと<br>日です。頑張りましょう！
+        </div>
+      </div>
+    </div>
+
+    <!-- カレンダー -->
+    <div class="cal-section">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-month" id="cal-month-label"></div>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+
+      <!-- 月間サマリー -->
+      <div class="month-summary" id="month-summary">
+        <div class="ms-card"><div class="ms-val" id="ms-days">0</div><div class="ms-lbl">学習日数</div></div>
+        <div class="ms-card"><div class="ms-val" id="ms-total">0</div><div class="ms-lbl">総解答数</div></div>
+        <div class="ms-card"><div class="ms-val" id="ms-acc">—%</div><div class="ms-lbl">月間正解率</div></div>
+      </div>
+
+      <!-- 連続学習 -->
+      <div class="streak-bar">
+        <div class="streak-icon">🔥</div>
+        <div class="streak-info">
+          <div class="streak-val"><span id="streak-num">0</span> 日</div>
+          <div class="streak-lbl">連続学習中（今日学習すると更新！）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 日別ポップアップ -->
+<div class="day-popup" id="day-popup"></div>
+
+<script>
+// ================================================================
+// キーワードデータ（全5管理分野）
+// ================================================================
+const KW=[
+{d:1,s:'2.1 事業企画',k:'フィージビリティスタディ',h:'事業可能性評価',m:'事業の収支・技術・法規制・市場等を事前に調査・分析し、事業として成立するかを判断する実現可能性評価。',t:'①市場調査・需要予測・財務試算・リスク評価を組み合わせて多角的に実施する。②ESG・環境評価も加味し投資家への説明責任に耐えうる根拠を整備する。'},
+{d:1,s:'2.1 事業企画',k:'需要予測（回帰分析・移動平均・指数平滑法）',h:'将来需要の統計的推計手法',m:'将来の需要量を統計的手法で推計すること。回帰分析は説明変数との関係を定式化、移動平均・指数平滑法は時系列データから傾向を抽出する。',t:'①複数手法を併用して楽観・悲観シナリオを設定する。②予測精度を定期検証し実績との乖離が大きい場合は手法を見直す。'},
+{d:1,s:'2.1 事業企画',k:'NPV（正味現在価値）／DCF法',h:'将来CFを現在価値に換算して評価',m:'将来のCFを割引率で現在価値に換算し合計したもの。NPV＞0なら投資価値あり。DCF法はその算出プロセス全体を指す。',t:'①割引率にWACCを用い感度分析で頑健性を確認する。②モンテカルロシミュレーションでNPVの確率分布を求めリスクを定量的に示す。'},
+{d:1,s:'2.1 事業企画',k:'内部収益率法（IRR）',h:'NPV=0となる割引率',m:'NPV＝0となる割引率。IRR＞資本コスト（WACC）なら採択。複数案の比較・投資案の優先順位付けに活用。',t:'①IRRと資本コストの差（スプレッド）を確認しNPVと併用して判断する。②非正規CFの案件では修正IRR（MIRR）を使用する。'},
+{d:1,s:'2.1 事業企画',k:'回収期間法',h:'初期投資を回収するまでの期間',m:'初期投資額を年間CFで回収するまでの期間を算出する手法。シンプルで直感的だが割引概念・回収後のCFを無視する限界がある。',t:'①リスク感応度の簡易指標として活用しNPV・IRRと必ず組み合わせる。②割引回収期間法で貨幣の時間価値を考慮した評価を行う。'},
+{d:1,s:'2.1 事業企画',k:'費用便益分析（B/C比）',h:'公共事業の費用対効果評価',m:'投資の費用と便益を金額換算して比較（B/C比）。公共事業・政策評価で多用され、B/C＞1であれば経済的妥当性があると判断される。',t:'①便益の金額換算が困難な場合は費用効用分析（QALY等）を併用する。②B/C比と費用効果比を並列提示し多面的に妥当性を示す。'},
+{d:1,s:'2.1 事業企画',k:'アウトカム・アウトプット・インプット指標',h:'政策評価の三層指標',m:'インプット：投入資源。アウトプット：直接成果（件数等）。アウトカム：最終的な社会的成果（健康改善・事故減少等）。PDCAと連動させる。',t:'①KGIにアウトカム、KPIにアウトプット指標を設定し論理モデルで因果関係を示す。②アウトカム指標を定期測定し目標との乖離を早期に把握する。'},
+{d:1,s:'2.1 事業企画',k:'BCP／BCM（事業継続計画）',h:'緊急事態での業務継続・早期復旧体制',m:'緊急事態でも重要業務を継続・早期復旧させるための計画（BCP）と継続的管理体制（BCM）。RTO・RPOの設定が核心。',t:'①BIA（事業影響度分析）でRTO・RPOを設定し代替拠点・バックアップ体制を整備・訓練する。②PDCAで計画を定期見直し・演習し実効性を維持する。'},
+{d:1,s:'2.1 事業企画',k:'PFI（Private Finance Initiative）',h:'公共施設への民間資金・技術活用',m:'公共施設の建設・管理に民間の資金・技術・ノウハウを活用する手法。VFM評価が導入判断の核心。',t:'①VFM分析で従来型公共事業との費用対効果を定量比較する。②契約段階でリスク分担・モニタリング条項を明確化する。'},
+{d:1,s:'2.1 事業企画',k:'コンカレントエンジニアリング／フロントローディング',h:'上流集中で手戻りを防ぐ設計手法',m:'設計・製造・評価を並行して進め（コンカレント）、上流段階で問題を集中的に解決（フロントローディング）することで手戻りを防ぐ設計管理手法。',t:'①部門横断チームでデザインレビューを各フェーズで実施する。②デジタルツイン・CAEによる仮想検証を上流に適用する。'},
+{d:1,s:'2.1 事業企画',k:'KGI・KSF・KPI',h:'目標管理の三層指標',m:'KGI：最終目標指標。KSF：目標達成の鍵となる成功要因。KPI：KSFの達成度を測る業績評価指標。三者を連動させて目標管理を行う。',t:'①KGI→KSF→KPIの論理的連鎖を明示し現場のKPI改善が最終目標に直結することを見える化する。②KPIの測定頻度・責任者・目標値を明確にし定期レビューを実施する。'},
+{d:1,s:'2.2 品質の管理',k:'要求品質・設計品質・製造品質',h:'品質の3段階',m:'要求品質：顧客ニーズ。設計品質：設計で狙った品質（ねらいの品質）。製造品質：実際に作られた品質（できばえの品質）。',t:'①QFDで要求品質を設計品質に変換し顧客ニーズを仕様に反映する。②Cp・Cpkで設計品質と製造品質のギャップを定量把握し改善につなげる。'},
+{d:1,s:'2.2 品質の管理',k:'QCストーリー',h:'問題解決の標準7ステップ',m:'テーマ選定→現状把握→要因解析→対策→効果確認→標準化→水平展開の7ステップからなる問題解決の標準的な手順。',t:'①各ステップでデータに基づく判断を徹底し感覚的な改善を排除する。②標準化・水平展開を必ず実施し改善効果を組織全体に定着させる。'},
+{d:1,s:'2.2 品質の管理',k:'QC七つ道具',h:'定量データ向け品質分析ツール群',m:'パレート図・特性要因図・管理図・ヒストグラム・散布図・チェックシート・層別の7種。製造現場での品質問題を定量的に分析・改善するための基本ツール群。',t:'①現状把握にはパレート図・ヒストグラム、要因解析には特性要因図を活用する。②管理図で工程の安定性を継続監視し異常を早期検出する。'},
+{d:1,s:'2.2 品質の管理',k:'品質機能展開（QFD）',h:'顧客ニーズを設計仕様に変換',m:'顧客の要求品質（何を）を設計・製造の技術特性（どのように）に変換するマトリクス手法。品質の家（House of Quality）が代表的ツール。',t:'①VOC（顧客の声）を収集し重要度の高い要求品質を優先的に技術特性に展開する。②QFDを工程設計・部品設計まで多段展開し顧客ニーズを現場まで一貫して伝える。'},
+{d:1,s:'2.2 品質の管理',k:'ISO 9000シリーズ',h:'品質マネジメントシステムの国際規格',m:'品質マネジメントシステム（QMS）の国際規格群。ISO 9001が認証規格で顧客満足向上と継続的改善を要求事項の中核に置く。',t:'①ISO 9001認証取得によりQMSを構築・文書化し第三者審査で品質保証力を示す。②内部監査・マネジメントレビューを定期実施しQMSの実効性を継続的に改善する。'},
+{d:1,s:'2.2 品質の管理',k:'製造物責任（PL法）',h:'欠陥製品による損害の無過失責任',m:'製品の欠陥により消費者が損害を被った場合、製造者が過失の有無にかかわらず賠償責任を負う（無過失責任）。',t:'①設計・製造段階でFMEA・FTAを実施し欠陥リスクを事前評価する。②トレーサビリティシステムを構築し事故発生時の迅速なリコール・原因特定を可能にする。'},
+{d:1,s:'2.2 品質の管理',k:'工程能力指数（Cp・Cpk）',h:'工程のばらつきと規格幅の比',m:'Cp＝規格幅÷（6σ）で工程のばらつきと規格幅の比を表す。Cpkは平均値のずれ（中心のずれ）を考慮した指標。Cpk≧1.33が一般的合格水準。',t:'①Cpkが基準未満の工程を優先改善し4M視点でばらつきの主要因を特定・排除する。②工程能力の定期測定と管理図による継続監視を組み合わせる。'},
+{d:1,s:'2.2 品質の管理',k:'HACCP',h:'食品の重要管理点による衛生管理',m:'食品の製造工程で危害要因（生物・化学・物理的）を分析し重要管理点（CCP）を特定・監視することで安全を確保する予防的衛生管理手法。食品衛生法で義務化。',t:'①HA（危害要因分析）で全工程のリスクを洗い出しCCPを設定する。②記録の保存・定期的なバリデーションでHACCPプランの有効性を確認・更新する。'},
+{d:1,s:'2.3 工程管理',k:'PQCDSME',h:'生産活動の総合評価7指標',m:'生産性（P）・品質（Q）・コスト（C）・納期（D）・安全性（S）・意欲（M）・環境（E）の7要素。生産活動を多面的に評価するための指標群。',t:'①各要素をKPIとして設定・定期測定しPDCAサイクルで改善を展開する。②要素間のトレードオフを認識し総合技術監理の視点で全体最適を判断する。'},
+{d:1,s:'2.3 工程管理',k:'JIT生産方式・かんばん方式',h:'必要な時に必要な量だけ生産',m:'JIT（ジャストインタイム）：必要なものを必要な時に必要な量だけ生産しムダな在庫をなくす方式。かんばん方式はJITを実現するプル型情報伝達ツール。',t:'①かんばん枚数を需要変動に合わせて最適設定し在庫量と生産リードタイムを削減する。②多能工化・段取り短縮（SMED）でJITの実効性を確保する。'},
+{d:1,s:'2.3 工程管理',k:'制約条件の理論（TOC）',h:'ボトルネック改善で全体最適',m:'システム全体のスループットはボトルネック（最も能力が低い工程）により決まるという考え方。ボトルネックの特定と集中改善で全体最適を実現する。',t:'①DBR手法でボトルネックを基準に全工程の生産リズムを合わせ仕掛在庫の増大を防ぐ。②TOCの5ステップ（特定→活用→従属→強化→繰返し）でボトルネックを継続解消する。'},
+{d:1,s:'2.3 工程管理',k:'PERT／CPM',h:'ネットワーク図によるプロジェクト工程管理',m:'PERT：確率的所要時間でプロジェクト完了時期を評価。CPM：確定的所要時間でクリティカルパス（最長経路）を特定し工程を管理する手法。',t:'①クリティカルパスを特定し重点管理する。遅延時はクラッシング（資源追加）やファストトラッキング（並列化）で挽回する。②フロート（余裕時間）を把握し資源の再配分に活用する。'},
+{d:1,s:'2.3 工程管理',k:'5S（整理・整頓・清掃・清潔・躾）',h:'職場環境整備の基盤活動',m:'整理（不要物排除）・整頓（定位置化）・清掃（汚れ除去）・清潔（3Sの維持）・躾（ルール遵守の習慣化）。安全・品質・生産性向上の基盤となる職場環境活動。',t:'①整頓（定位置・定量・定方向）の徹底で探す・取り出すムダを排除し作業効率を高める。②定期的な5S監査でチェックリスト評価・写真記録により維持水準を見える化する。'},
+{d:1,s:'2.3 工程管理',k:'ECRSの原則',h:'排除→結合→交換→簡素化の改善優先順位',m:'排除（Eliminate）→結合（Combine）→交換（Rearrange）→簡素化（Simplify）の順で作業改善を検討する優先順位の原則。',t:'①ECRSの順序を守り「排除できないか」を最初に徹底的に検討する。②工程分析と組み合わせ工程全体のムリ・ムダ・ムラを体系的に削減する。'},
+{d:1,s:'2.4 原価管理',k:'原価企画・目標原価（許容原価）',h:'設計段階での原価作り込み手法',m:'製品企画・設計段階で「市場価格－目標利益＝目標原価」を設定し達成に向けて設計・調達・製造を進める上流志向の原価管理手法。原価の80%は設計段階で決まる。',t:'①VE・デザインイン・コンカレントエンジニアリングを活用し設計段階で目標原価を達成する作り込みを行う。②目標原価をサプライヤーと共有しバリューチェーン全体での原価低減を推進する。'},
+{d:1,s:'2.4 原価管理',k:'標準原価計算・原価差異分析',h:'標準と実際を比較し差異を分析',m:'あらかじめ設定した標準原価と実際原価を比較し差異を分析する原価計算。差異を材料費差異・労務費差異等に分解し管理可能・不能を区分する。',t:'①原価差異を管理可能差異と管理不能差異に区分し管理可能差異に集中して改善を図る。②差異分析結果を月次で関係部門にフィードバックし部門横断での原因究明を推進する。'},
+{d:1,s:'2.4 原価管理',k:'活動基準原価計算（ABC）',h:'アクティビティとコストドライバーで間接費配賦',m:'製品・サービスが消費する活動（アクティビティ）を特定しコストドライバーで間接費を配賦する精緻な原価計算手法。間接費が多い業種で特に有効。',t:'①アクティビティ分析で非価値付加活動（検査・移動・段取り等）を識別し削減を優先する。②製品・顧客別の真の採算性を把握し価格設定・顧客戦略の意思決定に活用する。'},
+{d:1,s:'2.4 原価管理',k:'損益分岐点分析・限界利益',h:'固定費と変動費の関係から利益ゼロ点を算出',m:'損益分岐点＝固定費÷限界利益率（売上高－変動費）。限界利益：売上高－変動費（貢献利益）。優劣分岐点は2案の損益が等しくなる販売量。',t:'①損益分岐点比率（BEP売上高÷実際売上高）を安全余裕率の逆数として管理する。②設備投資の際は優劣分岐点分析で損益が逆転する生産量を算出しリスクを評価する。'},
+{d:1,s:'2.4 原価管理',k:'WACC（加重平均資本コスト）',h:'企業の資本調達コストの加重平均',m:'負債コストと株主資本コストを資本構成比で加重平均した企業全体の資本調達コスト。投資判断のハードルレートとして使用される。',t:'①IRR・ROICとWACCを比較しWACC超過案件を採択することで企業価値（EVA）を創造する。②資本構成の最適化によりWACCを低減する。'},
+{d:1,s:'2.4 原価管理',k:'ROIC（投下資本利益率）',h:'投下資本に対する利益率',m:'事業活動に投下した資本（有利子負債＋株主資本）に対してどれだけの利益を上げたかを示す指標。ROIC＞WACCが価値創造の条件。',t:'①ROIC＞WACCの事業に経営資源を集中しROIC＜WACCの事業は改善・撤退を判断する。②ROICツリーで改善ドライバーを特定し利益率改善と資産効率向上の施策を展開する。'},
+{d:1,s:'2.5 財務会計',k:'財務三表（B/S・P/L・C/F）の連動',h:'貸借対照表・損益計算書・CF計算書',m:'B/S：財政状態（資産＝負債＋純資産）。P/L：経営成績（5段階利益）。C/F：資金の流れ（営業・投資・財務の3区分）。三表は相互に連動する。',t:'①三表を一体で読み解きP/L黒字でもCF赤字の「黒字倒産」リスクを管理する。②フリーCF（営業CF－投資CF）を継続監視し投資余力・財務健全性の判断指標として活用する。'},
+{d:1,s:'2.5 財務会計',k:'国際会計基準（IFRS）',h:'IASBが策定する国際財務報告基準',m:'IASBが設定する国際財務報告基準。日本基準との主な差異：のれん非償却・包括利益重視・公正価値評価の拡大・収益認識の原則主義。',t:'①IFRS適用に向け日本基準との差異項目を網羅的に把握し会計方針変更・開示体制を計画的に整備する。②のれん非償却によるB/S・P/Lへの影響をM&A計画に反映し買収後の価値創造を推進する。'},
+{d:1,s:'2.6 設備管理',k:'設備総合効率（OEE）',h:'時間稼働率×性能稼働率×良品率',m:'時間稼働率×性能稼働率×良品率で算出される設備の総合的な活用度指標。世界水準はOEE≧85%。6大ロスの削減で向上させる。',t:'①OEEを構成する3指標を個別に測定・分析し最も低い指標を引き下げているロス要因を特定して優先改善する。②OEEをKPIとしてTPM活動と連動させ現場全員で6大ロスゼロを目指す。'},
+{d:1,s:'2.6 設備管理',k:'寿命特性曲線（バスタブカーブ）',h:'初期故障期→偶発故障期→摩耗故障期',m:'設備・部品の故障率の時間変化を示す曲線。初期故障期（減少）→偶発故障期（一定・低水準）→摩耗故障期（増加）の3段階からなる浴槽形状の曲線。',t:'①初期故障期には慣らし運転・デバッグを徹底し早期に偶発故障期に移行させる。②摩耗故障期への移行時期を把握し摩耗故障が顕在化する前に予防保全・計画更新を実施する。'},
+{d:1,s:'2.6 設備管理',k:'設備保全の種類（TBM・CBM・BM・CM・MP）',h:'予防・予知・事後・改良・保全予防',m:'TBM（定期保全）・CBM（予知保全）・BM（事後保全）・CM（改良保全）・MP（保全予防）の5種。設備の重要度と故障特性に応じて使い分ける。',t:'①設備の重要度をランク付けしクリティカル設備には予防・予知保全、非クリティカル設備には事後保全を適用して保全コストを最適化する。②CBMでIoTセンサー・AIによる異常予兆検知システムを構築する。'},
+{d:1,s:'2.7 数理的手法',k:'特性要因図（魚の骨図）',h:'結果に対する原因を体系的に整理',m:'結果（特性）に対して影響する要因を4M（Man・Machine・Material・Method）等の大骨に分類して樹状に整理する図。原因追究・品質問題解析に広く活用される。',t:'①4M＋環境（5M1E）の視点で要因を網羅的に洗い出し重要要因を絞り込んでデータ収集・検証につなげる。②QCサークルでブレインストーミングと組み合わせて作成し見落とし要因を防ぐ。'},
+{d:1,s:'2.7 数理的手法',k:'モンテカルロシミュレーション',h:'乱数による確率的リスク評価手法',m:'確率分布に従う乱数を用いて大量の試行を繰り返し、不確実な変数を含む問題の結果分布を確率的に推定する手法。リスク分析・工期・コスト評価に多用される。',t:'①プロジェクトの工期・コストの不確実性をモンテカルロで定量化しP80等の確率的目標値を設定する。②感度分析と組み合わせ結果の分散に最も寄与する変数（クリティカルリスク）を特定する。'},
+{d:1,s:'2.7 数理的手法',k:'AHP（階層分析法）',h:'定性的判断を数値化する意思決定法',m:'目標・評価基準・代替案を階層構造化し一対比較行列によって各要素の重みを定量化する意思決定支援手法。複数評価基準を持つ複雑な意思決定に有効。',t:'①評価基準をAHPで重み付けし複数代替案のスコアを算出して恣意性を排した客観的な意思決定根拠を提示する。②整合度指数（CI）でCI≧0.1の場合は評価の見直しを行い判断の信頼性を確保する。'},
+{d:1,s:'2.7 数理的手法',k:'VE（価値工学）／VA（価値分析）',h:'機能÷コストで価値を最大化する手法',m:'価値（V）＝機能（F）÷コスト（C）の式で製品・サービスの価値を最大化する体系的手法。VEは設計段階、VAは既存製品の改善に適用。機能本位のアプローチが特徴。',t:'①機能定義→機能整理（FAST図）→機能評価→代替案作成の手順でVEを実施しコスト削減と機能向上を同時に達成する。②設計上流（ゼロルックVE）でVEを適用し大幅なコスト削減効果を得る。'},
+{d:1,s:'2.7 数理的手法',k:'多目的最適化・パレート最適',h:'相反する複数目的の同時最適化',m:'複数の相反する目的関数（コスト最小化と品質最大化等）を同時に最適化する問題。パレート最適：一方を改善すると他方が悪化するトレードオフ解の集合（パレートフロント）。',t:'①パレートフロントを可視化して意思決定者に提示し複数目的間のトレードオフを明示した上で最終判断を人間が行う。②総合技術監理の5管理間のトレードオフ解決にパレート最適の概念を適用する。'},
+{d:2,s:'3.1 人の行動と組織',k:'心理的安全性',h:'意見・失敗を安心して表明できる雰囲気',m:'チーム内で意見・疑問・失敗を安心して表明できる雰囲気。高い心理的安全性はイノベーションや問題の早期発見に直結する。',t:'①リーダーが自ら弱みを開示し失敗を学習の機会として扱う姿勢を示すことでメンバーの発言を促す。②1on1や匿名フィードバック制度を設け懸念が表面化しやすい仕組みを整備する。'},
+{d:2,s:'3.1 人の行動と組織',k:'マズローの欲求5段階説',h:'生理→安全→社会→承認→自己実現',m:'人間の欲求を5段階の階層（生理的欲求・安全欲求・社会的欲求・承認欲求・自己実現欲求）で説明した理論。低次の欲求が満たされると高次の欲求が動機付けとなる。',t:'①組織設計では各階層の欲求に対応した施策（労働安全→帰属感→評価制度→成長機会）を体系的に整備する。②管理職は部下の現在の欲求段階を把握し適切な動機付けを行う。'},
+{d:2,s:'3.1 人の行動と組織',k:'PM理論・SL理論（リーダーシップ）',h:'状況対応型リーダーシップ理論',m:'PM理論：P機能（目標達成）とM機能（集団維持）の組み合わせでリーダーシップを分類。SL理論：部下の成熟度に応じてリーダーシップスタイルを変える状況対応理論。',t:'①SL理論に基づき部下の習熟度に応じて指示型→コーチング型→支援型→委任型とスタイルを段階的に移行させる。②PM理論でPM型（理想）を把握し自己改善に活用する。'},
+{d:2,s:'3.1 人の行動と組織',k:'ウェルビーイング・組織コミットメント',h:'従業員の幸福感と組織への帰属意識',m:'ウェルビーイング：身体的・精神的・社会的に良好な状態。組織コミットメント：組織への愛着・帰属意識・継続意欲。両者が高い組織は生産性・定着率が高い。',t:'①健康経営・フレックスタイム・テレワーク等の施策でウェルビーイングを向上させる。②組織コミットメントを高めるため経営ビジョンの共有・公正な評価制度・成長機会の提供を組み合わせる。'},
+{d:2,s:'3.2 労働関係法と労務管理',k:'三六協定・法定労働時間',h:'時間外労働を可能にする労使協定',m:'労働基準法36条に基づく労使協定。締結・届出により法定時間外労働（法定労働時間：1日8時間・週40時間）が可能になる。特別条項には上限規制がある。',t:'①時間外労働の上限（月45時間・年360時間等）を管理システムで可視化し超過防止のアラートを運用する。②業務量の平準化・テレワーク導入により恒常的な長時間労働の根本原因を解消する。'},
+{d:2,s:'3.2 労働関係法と労務管理',k:'働き方改革・ワーク・ライフ・バランス',h:'多様な働き方と仕事・生活の調和',m:'労働時間の削減・柔軟化・多様な雇用形態の促進を通じて働き方を改革し仕事と生活の調和（WLB）を実現する一連の施策。',t:'①フレックスタイム・変形労働時間制・テレワーク等を組み合わせ従業員が働き方を選択できる環境を整備する。②副業・兼業ガイドラインを整備し多様な働き方を容認しつつ健康管理義務を果たす。'},
+{d:2,s:'3.2 労働関係法と労務管理',k:'ハラスメント（パワハラ・セクハラ）',h:'職場における権力・性的嫌がらせ',m:'パワーハラスメント：優越的関係を背景にした業務上不必要な言動で精神的苦痛を与える行為。セクシャルハラスメント：性的言動による不快感・不利益の付与。',t:'①ハラスメント防止方針を明文化し定期研修・相談窓口の設置・迅速な対応手順を整備する。②アンコンシャス・バイアス研修でハラスメントの温床となる偏見・思い込みを組織全体で払拭する。'},
+{d:2,s:'3.2 労働関係法と労務管理',k:'人的資本経営・人的資本の情報公開',h:'人材を資本として捉える経営視点',m:'人材を「コスト」でなく「資本（投資対象）」として捉え人材への投資によって企業価値を向上させる経営の考え方。ISO 30414・有価証券報告書での開示が求められる。',t:'①スキル・エンゲージメント・研修投資額等の人的資本指標を定量化し経営戦略との連動を開示する。②人的資本の情報公開をESG投資家へのアピールとして活用し資本コスト低減につなげる。'},
+{d:2,s:'3.3 人材活用計画',k:'ダイバーシティ・マネジメント',h:'多様な人材の戦略的活用',m:'性別・年齢・国籍・障害・LGBTQ等多様な人材を戦略的に活用し組織の創造性・競争力を高めるマネジメント。',t:'①アンコンシャス・バイアス研修の実施と採用・昇進プロセスの透明化によって機会均等を確保する。②女性活躍推進法・障害者雇用促進法等の法令を遵守しつつポジティブアクションを計画的に推進する。'},
+{d:2,s:'3.3 人材活用計画',k:'ジョブ型・メンバーシップ型雇用',h:'職務主義 vs 属人主義の雇用形態',m:'ジョブ型（職務主義）：職務内容を明確に定義した雇用。メンバーシップ型（属人主義）：職務を限定せず採用し組織に合わせて役割を決める日本型雇用。',t:'①専門性が高い職種はジョブ型を導入しスキルに応じた報酬・評価制度を整備する。②移行期には職務記述書（ジョブディスクリプション）の整備と評価基準の透明化を優先する。'},
+{d:2,s:'3.4 人材開発',k:'目標管理制度（MBO）',h:'個人が自ら目標を設定し達成度を評価',m:'個人・チームが自ら目標を設定し達成度を評価する制度。自律的な行動を促し組織目標と個人目標を連動させる。',t:'①目標をSMART原則（具体的・測定可能・達成可能・関連性・期限）で設定し評価の客観性を高める。②中間レビューを必ず実施し環境変化に合わせて目標を柔軟に修正できる運用とする。'},
+{d:2,s:'3.4 人材開発',k:'OJT・OFF-JT・リスキリング',h:'職場内外での人材育成手法',m:'OJT（On the Job Training）：業務を通じた実践的な訓練。OFF-JT：業務外での研修・教育。リスキリング：デジタル化等の環境変化に対応するための新たなスキル習得。',t:'①OJTは指導者・期間・目標を明確にし「見せる→やらせる→フィードバック」の手順で体系的に実施する。②リスキリングはDX戦略と連動し優先育成スキルを特定して計画的に投資する。'},
+{d:2,s:'3.4 人材開発',k:'コンピテンシー・タレントマネジメント',h:'高業績者の行動特性と組織的人材管理',m:'コンピテンシー：高業績者に共通する行動特性。タレントマネジメント：組織が必要とする人材の採用・育成・配置・評価を統合的に管理する仕組み。',t:'①コンピテンシーモデルを評価・採用・育成に活用し「どのような人材像を求めるか」を組織全体で共有する。②タレントマネジメントシステムでスキルデータを可視化し最適な人材配置と後継者育成計画を推進する。'},
+{d:3,s:'4.1 情報分析と情報活用',k:'生成AI・大規模言語モデル（LLM）',h:'大量テキストで学習した文章生成AIモデル',m:'大量テキストで学習し文章生成・要約・コード生成等を行うAIモデル。業務効率化の一方ハルシネーション・情報漏洩リスクが課題。',t:'①社内データを含むプロンプト送信ルールを策定し機密情報の外部AIサービス入力を管理・制限する。②AI出力の事実確認プロセスを業務フローに組み込みハルシネーションによる誤情報の拡散を防止する。'},
+{d:3,s:'4.1 情報分析と情報活用',k:'ビッグデータ分析・データマイニング',h:'大量データから有用な知識を発見',m:'ビッグデータ：Volume（大量）・Variety（多様性）・Velocity（速度）の3Vの特性を持つ大量データ。データマイニング：統計・機械学習でパターン・関係性を発見する手法。',t:'①データガバナンスポリシーを策定しデータ品質管理・アクセス権限・活用ルールを整備する。②クラスター分析・回帰分析等を組み合わせ業務課題に応じた分析手法を選択し意思決定に活用する。'},
+{d:3,s:'4.1 情報分析と情報活用',k:'ナレッジマネジメント（形式知・暗黙知）',h:'組織の知識を創造・共有・活用する管理',m:'形式知（文書化・マニュアル化できる知識）と暗黙知（経験・勘に基づく知識）を相互変換（SECIモデル）し組織的に活用するマネジメント。',t:'①SECIモデル（共同化→表出化→連結化→内面化）を意識し暗黙知を形式知に変換するナレッジシェアの仕組みを構築する。②社内ポータル・ナレッジベースを整備し知識の共有と再利用を促進する。'},
+{d:3,s:'4.2 コミュニケーション',k:'アカウンタビリティ（説明責任）',h:'意思決定・行動の結果を関係者に説明する義務',m:'組織・個人が行った意思決定や行動の結果について利害関係者（ステークホルダー）に対して適切に説明・報告する義務と責任。',t:'①情報開示基準を明確化し財務・非財務情報（ESG等）を定期的に開示して投資家・社会との信頼関係を構築する。②緊急時・問題発生時には危機広報の手順に従い迅速・正確・誠実に情報を開示する。'},
+{d:3,s:'4.3 知的財産権と情報保護',k:'知的財産権の種類',h:'特許・実用新案・意匠・商標・著作権',m:'産業財産権（特許権・実用新案権・意匠権・商標権）と著作権が主な種類。特許権は新規性・進歩性・産業上利用可能性が要件。',t:'①知財戦略（創造・保護・活用）を事業戦略と連動させ特許ポートフォリオを計画的に構築する。②標準化戦略（デジュール・フォーラム・デファクト標準）を組み合わせ市場での競争優位を確保する。'},
+{d:3,s:'4.3 知的財産権と情報保護',k:'個人情報保護法・マイナンバー法',h:'個人情報の適正な取扱いを定めた法律',m:'個人情報の取得・利用・管理・提供・開示・削除の各段階でルールが定められ違反時の罰則も強化。マイナンバー法は特定個人情報の厳格な管理を義務づける。',t:'①個人情報の取得目的を明示しオプトイン/オプトアウトの仕組みを整備する。漏洩時の報告・通知義務を社内手順として文書化する。②匿名加工情報・仮名加工情報の活用によりデータ利活用と個人保護を両立させる。'},
+{d:3,s:'4.4 情報通信技術動向',k:'デジタルトランスフォーメーション（DX）',h:'デジタル技術による事業・組織の変革',m:'IoT・AI・クラウド等のデジタル技術を活用しビジネスモデル・組織・プロセスを変革して競争優位を確立すること。',t:'①レガシーシステムの刷新計画を策定しクラウド移行・API連携によりシステムの柔軟性・俊敏性を高める。②全社的なデジタルリテラシー向上（リスキリング）とDX推進組織の設置により変革を継続的に推進する。'},
+{d:3,s:'4.4 情報通信技術動向',k:'システム評価指標（RASIS）',h:'信頼性・可用性・保守性・保全性・安全性',m:'信頼性（Reliability：MTBF）・可用性（Availability：稼働率）・保守性（Serviceability：MTTR）・保全性（Integrity）・安全性（Security）の5指標。',t:'①MTBF・MTTR・稼働率を定期計測しSLAとの整合性を確認して改善優先度を判断する。②可用性向上には冗長化・フェールオーバー設計、保守性向上には標準化・モジュール化を推進する。'},
+{d:3,s:'4.5 情報セキュリティ',k:'情報セキュリティのCIA三要素',h:'機密性・完全性・可用性',m:'機密性（Confidentiality）：許可された者だけがアクセスできること。完全性（Integrity）：情報が改ざんされていないこと。可用性（Availability）：必要な時にアクセスできること。',t:'①技術的対策（ファイアウォール・暗号化・多要素認証・ゼロトラスト）を多層的に実装する。②ISMSの構築・ISO/IEC 27001認証取得と定期的な情報セキュリティ教育で組織的対策を定着させる。'},
+{d:3,s:'4.5 情報セキュリティ',k:'マルウェア・ランサムウェア・標的型攻撃',h:'代表的なサイバー攻撃の種類',m:'マルウェア：悪意ある目的で設計されたソフトウェア全般。ランサムウェア：データを暗号化し身代金を要求する攻撃。標的型攻撃：特定組織を狙った巧妙なサイバー攻撃。',t:'①セキュリティ対策ソフト・パッチ管理・定期的な訓練（標的型メール訓練等）で技術的・人的対策を組み合わせる。②インシデント対応手順（IRP）を整備し攻撃発生時の初動・封じ込め・復旧を迅速に実行できる体制を構築する。'},
+{d:3,s:'4.5 情報セキュリティ',k:'ゼロトラスト・多要素認証',h:'「信頼しない、常に検証する」セキュリティモデル',m:'ゼロトラスト：ネットワーク内外問わずすべてのアクセスを検証するセキュリティモデル。多要素認証：知識（パスワード）・所持（トークン）・生体（指紋等）の組み合わせによる認証。',t:'①テレワーク普及を背景にゼロトラストアーキテクチャへ移行し境界型防御の限界を克服する。②全システムへの多要素認証の適用とアクセスログの継続監視で不正アクセスのリスクを大幅に低減する。'},
+{d:4,s:'5.1 安全の概念',k:'フェールセーフ・フールプルーフ',h:'故障・誤操作時に安全側に移行する設計',m:'フェールセーフ：故障・誤作動時に安全側に移行する設計。フールプルーフ：誤操作があっても危険が生じない設計。本質安全（機械的に危険を内包しない設計）の実現手法。',t:'①設計段階でフェールセーフ・インターロック・非常停止装置を組み込みハードウェアレベルで安全を確保する（本質安全化）。②FMEA・デザインレビューにより設計段階のリスクを早期抽出しフロントローディングで対策を実施する。'},
+{d:4,s:'5.1 安全の概念',k:'安全文化・Safety 2.0',h:'組織全体で安全を重視する風土',m:'安全文化：組織全体で安全を最優先とする価値観・行動規範・習慣の集合。Safety 2.0：機械・人間・環境・制御の協調による柔軟な安全確保の新概念。',t:'①経営トップの安全コミットメントを明確にし安全投資・安全指標をKPIとして管理する。②ヒヤリハット報告を奨励する心理的安全性を醸成し潜在リスクの早期発見文化を構築する。'},
+{d:4,s:'5.2 リスクマネジメント',k:'リスクアセスメント（ISO 31000）',h:'リスクの特定・分析・評価のプロセス',m:'組織やプロジェクトに潜在するリスクを特定・分析・評価するプロセス。ISO 31000が国際標準。ハザードを洗い出し発生確率と影響規模の積でリスクを定量化する。',t:'①FMEA・FTA等の手法でリスクを定量化しALARPの原則（合理的に達成可能な限り低減）に基づいて工学的対策を実施する。②リスクマップで全体を可視化し残留リスクを継続的にモニタリング・見直す体制を構築する。'},
+{d:4,s:'5.2 リスクマネジメント',k:'ALARPの原則・残留リスク',h:'合理的に達成可能な限り低減',m:'ALARP（As Low As Reasonably Practicable）：リスクを社会的に受容可能なレベルまで合理的に低減すべきとする原則。残留リスク：対策後も残るリスクで文書化・管理が必要。',t:'①リスク低減対策のコストと便益を比較しALARP領域のリスクは費用対効果を示して合理的な対策を選択する。②残留リスクを関係者に開示しリスクコミュニケーションを通じて社会的受容を図る。'},
+{d:4,s:'5.3 労働安全衛生管理',k:'労働安全衛生法・OSHMS',h:'労働者の安全・健康を守る法律と管理体系',m:'労働安全衛生法：事業者が労働者の安全・健康確保のために講ずべき措置を定めた法律。OSHMS：PDCAサイクルによる継続的な労働安全衛生改善の管理体系。',t:'①安全管理者・衛生管理者・産業医の選任と安全衛生委員会の運営を法的要件に従って整備する。②OSHMS（ISO 45001）を構築しPDCAサイクルで労働災害ゼロに向けた継続的改善を推進する。'},
+{d:4,s:'5.3 労働安全衛生管理',k:'メンタルヘルスケア・ストレスチェック制度',h:'労働者の精神的健康管理',m:'ストレスチェック制度：従業員50人以上の事業場に年1回の実施が義務づけられた制度。4つのケア（セルフケア・ラインケア・事業場内専門スタッフ・外部機関）が推進される。',t:'①ストレスチェック結果を集団分析して職場環境改善に活用し問題のある部署を早期に特定する。②4つのメンタルヘルスケアを体系的に推進し管理職へのラインケア研修と相談窓口の整備を優先する。'},
+{d:4,s:'5.4 事故・災害の未然防止',k:'ハインリッヒの法則',h:'1件の重大事故の背後に300件のヒヤリハット',m:'1件の重大事故の背後には29件の軽微な事故、300件のヒヤリハットが存在するという経験則。未然防止活動の根拠となる。',t:'①ヒヤリハット報告制度を整備し報告しやすい職場文化（心理的安全性）を醸成して情報を収集・分析する。②KYT（危険予知訓練）・TBM等の日常活動で現場の危険感受性を高め不安全行動・不安全状態を早期に排除する。'},
+{d:4,s:'5.4 事故・災害の未然防止',k:'ヒューマンエラー・ヒューマンファクタ',h:'人間の特性に起因する誤り・事故要因',m:'ヒューマンエラー：人間の意図せぬ誤り。ヒューマンファクタ：機械・環境・組織との相互作用における人間的要因。エラーの多くは個人の失敗でなくシステムの欠陥に起因する。',t:'①事故分析では「なぜ人がエラーを犯したか」の背景要因（PSF）を追究し個人責任追及でなくシステム改善に焦点を当てる。②フールプルーフ・手順書（SOP）・チェックリストで人間の認知限界を補う仕組みを設計する。'},
+{d:4,s:'5.5 危機管理',k:'BCP・危機管理体制・ICS',h:'緊急事態への対応体制と事業継続計画',m:'危機管理：自然災害・テロ・パンデミック等の危機（crisis）に対し組織として体系的に対応する仕組み。ICS（Incident Command System）で指揮系統を明確化する。',t:'①危機管理マニュアルを策定し意思決定ルール・優先順位・危機広報の手順を明文化する。②ブラインド型訓練（想定を知らせない訓練）を定期実施し対応能力の実効性を検証する。'},
+{d:4,s:'5.5 危機管理',k:'自然災害・Natech・線状降水帯',h:'複合災害と自然災害起因の産業事故',m:'Natech（Natural Hazard Triggering Technological Disaster）：地震・洪水等の自然災害が引き金となって発生する産業事故。線状降水帯による集中豪雨が近年頻発している。',t:'①ハザードマップでNatech発生リスクを評価し危険物施設・インフラの耐災害性強化計画を策定する。②タイムラインを整備し警戒レベルに応じた段階的な対応手順を事前に確立する。'},
+{d:4,s:'5.6 システム安全工学手法',k:'FMEA（故障モード影響解析）',h:'故障モードとその影響を事前に分析',m:'Failure Mode and Effects Analysis：製品・システムの各構成要素の故障モードを特定しその影響・発生確率・検出可能性を評価して優先的に対策すべきリスクを特定する手法。',t:'①設計段階でFMEAを実施しRPN（リスク優先数：影響度×発生確率×検出困難度）が高い故障モードから優先的に対策する。②FMEAの結果を設計変更・試験計画・保全計画に反映させ製品安全を設計段階で確保する。'},
+{d:4,s:'5.6 システム安全工学手法',k:'FTA（フォールトツリー分析）・ETA（イベントツリー分析）',h:'トップダウン・ボトムアップの故障解析',m:'FTA：トップ事象（最悪事態）から原因を論理的にトップダウンで分析する手法。ETA：起因事象から結果をボトムアップで分析する手法。ボウタイ分析はFTAとETAを組み合わせたもの。',t:'①FTAでトップ事象の発生確率を算出し最小カット集合を特定して優先的に対策する。②ETAで事故シナリオの分岐ごとの確率を算出しリスク低減策の優先順位付けを行う。'},
+{d:4,s:'5.6 システム安全工学手法',k:'HAZOP（危険と操作性の研究）',h:'プロセスの逸脱とその影響を体系的に検討',m:'Hazard and Operability Study：プロセスの設計意図からの逸脱（高すぎる・低すぎる・逆流等）とその危険性を系統的に検討するリスク評価手法。化学・石油プラントで特に活用される。',t:'①HAZOP worksheetを用い逸脱語（Guide Words：No・More・Less等）と設計パラメータの組み合わせで網羅的にリスクを洗い出す。②発見されたリスクに対して設計変更・警報設定・手順書整備等の対策を立案し実施する。'},
+{d:5,s:'6.1 地球的規模の環境問題',k:'カーボンニュートラル・GX',h:'温室効果ガスの排出実質ゼロ',m:'カーボンニュートラル：温室効果ガスの排出量と吸収量を均衡させ実質ゼロにする目標（2050年）。GX（グリーントランスフォーメーション）はその実現に向けた産業・社会の変革。',t:'①Scope1・2の排出量を削減（省エネ・再エネ導入）しSBTに基づく削減目標を設定する。②カーボン・オフセット・排出量取引制度を活用しつつバリューチェーン全体（Scope3）の削減にも取り組む。'},
+{d:5,s:'6.1 地球的規模の環境問題',k:'Scope 1・2・3（GHG排出量）',h:'直接・間接排出量の三区分',m:'Scope1：自社の直接排出。Scope2：購入した電力・熱の間接排出。Scope3：バリューチェーン全体の排出（原材料調達・製品使用・廃棄等）。Scope3の比率が最も大きい企業が多い。',t:'①Scope1・2の削減目標をSBT（科学的根拠に基づく目標）として設定し脱炭素ロードマップを策定する。②Scope3削減にはサプライヤーとの協働・製品のライフサイクル設計改善・顧客の使用段階の排出削減支援が必要。'},
+{d:5,s:'6.1 地球的規模の環境問題',k:'SDGs（持続可能な開発目標）',h:'2030年までの17の国際目標',m:'2030年までに達成すべき17の国際目標。経済・社会・環境を統合的に改善し「誰一人取り残さない」社会を目指す。パリ協定と連動する。',t:'①自社事業とSDGsの関連目標をマッピングし優先課題を特定してCSR・CSV戦略に組み込む。②ESG情報の統合報告書・TCFD/TNFDに基づく開示を通じ投資家・ステークホルダーへの説明責任を果たす。'},
+{d:5,s:'6.1 地球的規模の環境問題',k:'パリ協定・IPCC',h:'気候変動対策の国際枠組みと科学的評価機関',m:'パリ協定：産業革命前比の気温上昇を2℃未満（努力目標1.5℃）に抑える国際協定。IPCC：気候変動に関する科学的知見を評価・報告する国際機関。',t:'①パリ協定目標に整合した気候変動適応計画（気候変動適応法）と緩和策（GHG削減）を並行して推進する。②IPCCレポートを活用し気候変動リスクをTCFDフレームワークで財務インパクトとして評価・開示する。'},
+{d:5,s:'6.1 地球的規模の環境問題',k:'生物多様性・ネイチャーポジティブ',h:'生物多様性の損失を止め回復させる目標',m:'昆明・モントリオール生物多様性枠組（2022年）：2030年までに陸と海の30%を保全する「30by30目標」を設定。ネイチャーポジティブ：2030年までに生物多様性の損失を止め回復に転じさせる概念。',t:'①TNFDフレームワークに基づき自然資本への依存・影響・リスクを評価・開示する。②サプライチェーンの生物多様性への影響を評価しOECM・自然再生活動に参加して30by30目標に貢献する。'},
+{d:5,s:'6.2 地域環境問題',k:'循環経済（サーキュラーエコノミー）・3R',h:'廃棄物を出さず資源を循環利用する経済モデル',m:'3R（リデュース・リユース・リサイクル）を超え設計段階から資源効率を追求する経済モデル。廃棄物を次の生産の資源として活用する。',t:'①環境適合設計（LCA・ライフサイクルコスティング）により製品設計段階でリサイクル性・長寿命化を組み込む。②各種リサイクル法（家電・自動車・プラスチック資源循環法等）を遵守し拡大生産者責任（EPR）に基づく回収・再資源化体制を整備する。'},
+{d:5,s:'6.2 地域環境問題',k:'典型7公害・四大公害病',h:'大気汚染・水質汚濁等の7種類の公害',m:'典型7公害：大気汚染・水質汚濁・土壌汚染・騒音・振動・地盤沈下・悪臭。四大公害病：水俣病・新潟水俣病・イタイイタイ病・四日市ぜんそく。',t:'①大気汚染防止法・水質汚濁防止法・土壌汚染対策法等を遵守し排出基準を管理する。②公害防止管理者を選任し定期的な測定・報告体制を整備して地域住民・行政への説明責任を果たす。'},
+{d:5,s:'6.3 環境保全の基本原則',k:'汚染者負担原則（PPP）・拡大生産者責任（EPR）',h:'汚染対策費用は汚染者が負担すべき原則',m:'PPP（Polluter Pays Principle）：汚染対策費用は汚染者が負担すべき原則。EPR（Extended Producer Responsibility）：製品のライフサイクル全体の環境責任を生産者が負う概念。',t:'①PPPに基づき環境税・課徴金・排出権取引の導入で内部化されていない外部コストを市場価格に反映させる。②EPR制度（家電リサイクル法等）に基づく回収・リサイクル体制を整備し製品廃棄段階の環境負荷低減に責任を持つ。'},
+{d:5,s:'6.3 環境保全の基本原則',k:'予防原則・ライフサイクルアセスメント（LCA）',h:'科学的不確実性下での環境保護措置',m:'予防原則：科学的に不確実な場合でも深刻・不可逆的な損害のおそれがあれば予防措置を講じるべき原則。LCA：製品のライフサイクル全体の環境負荷を定量評価する手法。',t:'①予防原則に基づき新技術・新物質の導入時は科学的不確実性を認識した上でリスク評価と代替案検討を先行させる。②LCAで製品・サービスの環境ホットスポットを特定し優先的な改善を実施する。'},
+{d:5,s:'6.4 組織の社会的責任',k:'CSR・CSV・ESG投資',h:'企業の社会的責任と共通価値創造',m:'CSR（Corporate Social Responsibility）：組織の社会的責任。CSV（Creating Shared Value）：社会問題の解決と経済的価値の同時実現。ESG投資：環境・社会・ガバナンスを考慮した投資。',t:'①CSRをリスク管理の視点で捉えるだけでなくCSVとして社会課題の解決を新事業機会として積極的に取り込む。②ESG投資家の評価基準（TCFD・TNFD・CDP・SBT・RE100等）を理解し統合報告書で非財務情報を体系的に開示する。'},
+{d:5,s:'6.4 組織の社会的責任',k:'ISO 14000シリーズ・環境マネジメントシステム（EMS）',h:'組織の環境管理体系の国際規格',m:'ISO 14001（EMS）：組織が自主的に環境目標を設定しPDCAサイクルで継続的に環境パフォーマンスを改善するための国際規格。',t:'①ISO 14001認証取得によりEMSを構築し環境リスクの特定・管理と継続的な環境負荷低減を組織的に推進する。②内部環境監査を定期実施し法的コンプライアンスと目標達成状況を確認してマネジメントレビューで改善を決定する。'},
+{d:5,s:'6.4 組織の社会的責任',k:'TCFD提言・TNFD提言',h:'気候・自然関連の財務情報開示フレームワーク',m:'TCFD（気候関連財務情報開示タスクフォース）：気候変動リスク・機会を財務情報として開示する枠組み。TNFD（自然関連財務情報開示タスクフォース）：自然資本・生物多様性リスクの開示枠組み。',t:'①TCFDに基づき「ガバナンス・戦略・リスク管理・指標と目標」の4項目で気候変動の財務インパクトを定量的に開示する。②TNFDフレームワークを活用し自然資本への依存・影響・リスク・機会を評価しサプライチェーン全体で対応策を策定する。'},
+];
+
+const DOMAINS={
+  '1':{name:'経済性管理',cc:'c1',fill:'fill1',emoji:'📊'},
+  '2':{name:'人的資源管理',cc:'c2',fill:'fill2',emoji:'👥'},
+  '3':{name:'情報管理',cc:'c3',fill:'fill3',emoji:'💡'},
+  '4':{name:'安全管理',cc:'c4',fill:'fill4',emoji:'🛡️'},
+  '5':{name:'社会環境管理',cc:'c5',fill:'fill5',emoji:'🌍'},
+};
+
+// ================================================================
+// 状態
+// ================================================================
+let curDomain='all', curSub='all', deck=[], deckIdx=0, isFlipped=false;
+let res={ok:0,ng:0};
+let weakSet=new Set();
+
+// カレンダー状態
+let calYear, calMonth;
+let studyLog={};   // { "YYYY-MM-DD": {total, ok, ng} }
+let examDate=null; // "YYYY-MM-DD"
+
+// ================================================================
+// ストレージ
+// ================================================================
+async function loadStorage(){
+  try{
+    const r1=localStorage.getItem('kanri_studyLog');
+    if(r1) studyLog=JSON.parse(r1);
+  }catch(e){studyLog={};}
+  try{
+    const r2=localStorage.getItem('kanri_examDate');
+    if(r2) examDate=r2;
+  }catch(e){examDate=null;}
+  try{
+    const r3=localStorage.getItem('kanri_weakSet');
+    if(r3) weakSet=new Set(JSON.parse(r3));
+  }catch(e){weakSet=new Set();}
+}
+
+async function saveStudyLog(){
+  try{ localStorage.setItem('kanri_studyLog',JSON.stringify(studyLog)); }catch(e){}
+}
+async function saveExamDateStorage(){
+  try{
+    if(examDate) localStorage.setItem('kanri_examDate',examDate);
+    else localStorage.removeItem('kanri_examDate');
+  }catch(e){}
+}
+async function saveWeakSet(){
+  try{ localStorage.setItem('kanri_weakSet',JSON.stringify([...weakSet])); }catch(e){}
+}
+
+// 今日の日付キー
+function todayKey(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+// 学習記録を更新
+async function recordStudy(ok, ng){
+  const key=todayKey();
+  if(!studyLog[key]) studyLog[key]={total:0,ok:0,ng:0};
+  studyLog[key].total+=ok+ng;
+  studyLog[key].ok+=ok;
+  studyLog[key].ng+=ng;
+  await saveStudyLog();
+}
+
+// ================================================================
+// 初期化
+// ================================================================
+async function init(){
+  await loadStorage();
+  const now=new Date();
+  calYear=now.getFullYear();
+  calMonth=now.getMonth();
+  buildDeck();
+  renderSubTabs();
+  updateHeader();
+  renderCard();
+}
+
+// ================================================================
+// デッキ構築
+// ================================================================
+function buildDeck(){
+  let src=KW;
+  if(curDomain==='weak'){
+    src=KW.filter((_,i)=>weakSet.has(i));
+    if(src.length===0) src=KW;
+  }else if(curDomain!=='all'){
+    src=KW.filter(k=>String(k.d)===curDomain);
+    if(curSub!=='all') src=src.filter(k=>k.s===curSub);
+  }
+  deck=[...src].sort((a,b)=>{
+    const ai=KW.indexOf(a),bi=KW.indexOf(b);
+    const aw=weakSet.has(ai)?0:1,bw=weakSet.has(bi)?0:1;
+    if(aw!==bw)return aw-bw;
+    return Math.random()-.5;
+  });
+  deckIdx=0; res={ok:0,ng:0};
+}
+
+function renderSubTabs(){
+  const el=document.getElementById('sub-tabs');
+  el.innerHTML='';
+  if(curDomain==='all'||curDomain==='weak') return;
+  const secs=[...new Set(KW.filter(k=>String(k.d)===curDomain).map(k=>k.s))];
+  const allBtn=document.createElement('button');
+  allBtn.className='stab on'; allBtn.textContent='すべて';
+  allBtn.onclick=()=>{ curSub='all'; document.querySelectorAll('.stab').forEach(b=>b.classList.remove('on')); allBtn.classList.add('on'); buildDeck(); resetView(); renderCard(); };
+  el.appendChild(allBtn);
+  secs.forEach(sec=>{
+    const btn=document.createElement('button');
+    btn.className='stab'+(curSub===sec?' on':'');
+    btn.textContent=sec;
+    btn.onclick=()=>{ curSub=sec; document.querySelectorAll('.stab').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); buildDeck(); resetView(); renderCard(); };
+    el.appendChild(btn);
+  });
+}
+
+function resetView(){
+  document.getElementById('done').classList.remove('show');
+  document.getElementById('card-area').classList.remove('hidden');
+  document.getElementById('actions').classList.remove('hidden');
+}
+
+function setDomain(d,btn){
+  curDomain=d; curSub='all';
+  document.querySelectorAll('.dtab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  buildDeck(); renderSubTabs(); resetView(); renderCard();
+}
+
+// ================================================================
+// カード描画
+// ================================================================
+function renderCard(){
+  if(deckIdx>=deck.length){ showDone(); return; }
+  const kw=deck[deckIdx];
+  const di=String(kw.d);
+  const dom=DOMAINS[di];
+  const fd=document.getElementById('f-domain');
+  fd.textContent=dom.emoji+' '+dom.name;
+  fd.className='card-domain '+dom.cc;
+  document.getElementById('f-section').textContent=kw.s;
+  document.getElementById('f-kw').textContent=kw.k;
+  document.getElementById('f-hint').textContent=kw.h?'【'+kw.h+'】':'';
+  const oldBadge=document.getElementById('face-f').querySelector('.weak-badge');
+  if(oldBadge) oldBadge.remove();
+  const ki=KW.indexOf(kw);
+  if(weakSet.has(ki)){
+    const badge=document.createElement('div');
+    badge.className='weak-badge'; badge.textContent='🔥 苦手キーワード';
+    document.getElementById('face-f').insertBefore(badge,document.getElementById('f-domain'));
+  }
+  const bd=document.getElementById('b-domain');
+  bd.textContent=dom.emoji+' '+dom.name+' — '+kw.s;
+  bd.className='back-domain '+dom.cc;
+  document.getElementById('b-kw').textContent=kw.k;
+  document.getElementById('b-meaning').textContent=kw.m;
+  document.getElementById('b-taisaku').textContent=kw.t;
+  document.getElementById('p-fill').className='prog-fill '+dom.fill;
+  isFlipped=false;
+  const cardEl=document.getElementById('card');
+  cardEl.classList.remove('flipped');
+  cardEl.style.height='350px';
+  updateProgress();
+}
+
+function flip(){
+  isFlipped=!isFlipped;
+  const cardEl=document.getElementById('card');
+  cardEl.classList.toggle('flipped',isFlipped);
+  if(isFlipped){
+    const faceB=document.getElementById('face-b');
+    const clone=faceB.cloneNode(true);
+    clone.style.cssText='position:fixed;top:-9999px;left:0;width:'+cardEl.offsetWidth+'px;transform:none;backface-visibility:visible;visibility:hidden;display:flex;flex-direction:column;padding:36px 32px;box-sizing:border-box;border-radius:20px;';
+    document.body.appendChild(clone);
+    const backH=clone.offsetHeight;
+    document.body.removeChild(clone);
+    const newH=Math.min(400, Math.max(350, backH+2));
+    cardEl.style.height=newH+'px';
+    // カード伸長後にボタンが見えるようスクロール
+    setTimeout(()=>{
+      const actEl=document.getElementById('actions');
+      if(actEl) actEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 380);
+  } else {
+    cardEl.style.height='350px';
+  }
+}
+
+async function judge(ok){
+  const kw=deck[deckIdx];
+  const ki=KW.indexOf(kw);
+  if(ok){ res.ok++; weakSet.delete(ki); }
+  else  { res.ng++; weakSet.add(ki); }
+  updateHeader();
+  await saveWeakSet();
+  deckIdx++; renderCard();
+}
+
+function skip(){ deckIdx++; renderCard(); }
+
+// ================================================================
+// 完了画面
+// ================================================================
+async function showDone(){
+  document.getElementById('card-area').classList.add('hidden');
+  document.getElementById('actions').classList.add('hidden');
+  const done=document.getElementById('done');
+  done.classList.add('show');
+  const total=res.ok+res.ng;
+  const pct=total>0?Math.round(res.ok/total*100):0;
+  let cc='c1';
+  if(curDomain!=='all'&&curDomain!=='weak'&&DOMAINS[curDomain]) cc=DOMAINS[curDomain].cc;
+  const sc=document.getElementById('done-score');
+  sc.textContent=pct+'%'; sc.className='done-score '+cc;
+  document.getElementById('done-emoji').textContent=pct>=80?'🎉':pct>=50?'📚':'💪';
+  document.getElementById('done-detail').innerHTML=
+    `正解 <strong>${res.ok}</strong> 問 ／ 不正解 <strong>${res.ng}</strong> 問<br>`+
+    (weakSet.size>0?`苦手キーワード：<strong>${weakSet.size}</strong> 件 → 「🔥 苦手のみ」で集中練習！`:'🎊 全問正解！完璧です！');
+  const rb=document.getElementById('done-restart');
+  rb.className='done-restart '+cc;
+  // 学習記録に保存
+  if(total>0) await recordStudy(res.ok, res.ng);
+}
+
+function restart(){ resetView(); buildDeck(); renderCard(); }
+
+// ================================================================
+// UI更新
+// ================================================================
+function updateHeader(){
+  document.getElementById('h-ok').textContent=res.ok;
+  document.getElementById('h-ng').textContent=res.ng;
+  document.getElementById('h-wk').textContent=weakSet.size;
+}
+function updateProgress(){
+  const total=deck.length, cur=Math.min(deckIdx,total);
+  const pct=total>0?Math.round(cur/total*100):0;
+  document.getElementById('p-label').textContent=cur+' / '+total;
+  document.getElementById('p-pct').textContent=pct+'%';
+  document.getElementById('p-fill').style.width=pct+'%';
+}
+
+// ================================================================
+// カレンダー
+// ================================================================
+function openCal(){
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  // 試験日入力欄にセット
+  if(examDate) document.getElementById('exam-date-input').value=examDate;
+  renderCalendar();
+  renderCountdown();
+}
+function closeCal(){ document.getElementById('modal-overlay').classList.add('hidden'); }
+function bgClose(e){ if(e.target===document.getElementById('modal-overlay')) closeCal(); }
+
+function changeMonth(dir){
+  calMonth+=dir;
+  if(calMonth>11){ calMonth=0; calYear++; }
+  if(calMonth<0){ calMonth=11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const label=document.getElementById('cal-month-label');
+  label.textContent=calYear+'年 '+(calMonth+1)+'月';
+
+  const grid=document.getElementById('cal-grid');
+  grid.innerHTML='';
+
+  // 曜日ヘッダー
+  const days=['日','月','火','水','木','金','土'];
+  days.forEach((d,i)=>{
+    const el=document.createElement('div');
+    el.className='cal-dow'+(i===0?' sun':i===6?' sat':'');
+    el.textContent=d;
+    grid.appendChild(el);
+  });
+
+  const today=new Date();
+  const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+
+  // 月初の曜日
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const lastDate=new Date(calYear,calMonth+1,0).getDate();
+  const prevLastDate=new Date(calYear,calMonth,0).getDate();
+
+  // 月間集計
+  let mDays=0, mTotal=0, mOk=0, mNg=0;
+
+  // 前月埋め
+  for(let i=firstDay-1;i>=0;i--){
+    const d=document.createElement('div');
+    d.className='cal-day other-month';
+    d.innerHTML=`<div class="cal-day-num">${prevLastDate-i}</div>`;
+    grid.appendChild(d);
+  }
+
+  // 当月
+  for(let date=1;date<=lastDate;date++){
+    const dateStr=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(date).padStart(2,'0');
+    const log=studyLog[dateStr];
+    const isToday=dateStr===todayStr;
+    const isExam=dateStr===examDate;
+
+    const d=document.createElement('div');
+    let cls='cal-day';
+    if(isToday) cls+=' today';
+    if(isExam) cls+=' exam-day';
+    if(log&&log.total>0){ cls+=' has-data'; mDays++; mTotal+=log.total; mOk+=log.ok; mNg+=log.ng; }
+    d.className=cls;
+
+    // ドットカラー（学習量レベル）
+    let dotCls='';
+    if(log&&log.total>0){
+      if(log.total>=30) dotCls='dot-lv4';
+      else if(log.total>=20) dotCls='dot-lv3';
+      else if(log.total>=10) dotCls='dot-lv2';
+      else dotCls='dot-lv1';
+    }
+
+    d.innerHTML=`<div class="cal-day-num">${isExam?'🎯':date}</div>`+
+      (dotCls?`<div class="cal-day-dot ${dotCls}"></div>`:'');
+
+    if(log&&log.total>0){
+      d.onmouseenter=(e)=>showPopup(e,dateStr,log);
+      d.onmouseleave=()=>hidePopup();
+      d.onclick=()=>{ if(window.innerWidth<=500){ showPopup(null,dateStr,log,true); } };
+    }
+    grid.appendChild(d);
+  }
+
+  // 次月埋め
+  const remaining=7-((firstDay+lastDate)%7);
+  if(remaining<7){
+    for(let i=1;i<=remaining;i++){
+      const d=document.createElement('div');
+      d.className='cal-day other-month';
+      d.innerHTML=`<div class="cal-day-num">${i}</div>`;
+      grid.appendChild(d);
+    }
+  }
+
+  // 月間サマリー
+  document.getElementById('ms-days').textContent=mDays;
+  document.getElementById('ms-total').textContent=mTotal;
+  document.getElementById('ms-acc').textContent=mTotal>0?Math.round(mOk/mTotal*100)+'%':'—%';
+
+  // 連続学習日数
+  renderStreak(todayStr);
+}
+
+function renderStreak(todayStr){
+  let streak=0;
+  const d=new Date();
+  for(let i=0;i<365;i++){
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(studyLog[key]&&studyLog[key].total>0){ streak++; d.setDate(d.getDate()-1); }
+    else if(i===0){ break; } // 今日未学習ならゼロ
+    else break;
+  }
+  document.getElementById('streak-num').textContent=streak;
+}
+
+// 日別ポップアップ
+function showPopup(e, dateStr, log, fixed=false){
+  const popup=document.getElementById('day-popup');
+  const acc=log.total>0?Math.round(log.ok/log.total*100)+'%':'—%';
+  popup.innerHTML=`<div class="day-popup-date">${dateStr}</div>`+
+    `<div class="day-popup-row"><span class="day-popup-lbl">解答数</span><span class="day-popup-val">${log.total}</span></div>`+
+    `<div class="day-popup-row"><span class="day-popup-lbl">正解</span><span class="day-popup-val" style="color:var(--c5)">${log.ok}</span></div>`+
+    `<div class="day-popup-row"><span class="day-popup-lbl">不正解</span><span class="day-popup-val" style="color:var(--c4)">${log.ng}</span></div>`+
+    `<div class="day-popup-row"><span class="day-popup-lbl">正解率</span><span class="day-popup-val" style="color:var(--c1)">${acc}</span></div>`;
+  if(fixed){
+    popup.style.top='50%'; popup.style.left='50%';
+    popup.style.transform='translate(-50%,-50%)';
+    popup.classList.add('show');
+    setTimeout(()=>popup.classList.remove('show'),2000);
+  }else if(e){
+    popup.style.top=(e.clientY-120)+'px';
+    popup.style.left=Math.min(e.clientX+10, window.innerWidth-180)+'px';
+    popup.style.transform='none';
+    popup.classList.add('show');
+  }
+}
+function hidePopup(){ document.getElementById('day-popup').classList.remove('show'); }
+
+// ================================================================
+// 試験日
+// ================================================================
+async function saveExamDate(){
+  const v=document.getElementById('exam-date-input').value;
+  if(!v) return;
+  examDate=v;
+  await saveExamDateStorage();
+  renderCountdown();
+  renderCalendar();
+}
+
+async function clearExamDate(){
+  examDate=null;
+  document.getElementById('exam-date-input').value='';
+  await saveExamDateStorage();
+  renderCountdown();
+  renderCalendar();
+}
+
+function renderCountdown(){
+  const box=document.getElementById('countdown-box');
+  if(!examDate){ box.classList.remove('show'); return; }
+  const today=new Date(); today.setHours(0,0,0,0);
+  const exam=new Date(examDate); exam.setHours(0,0,0,0);
+  const diff=Math.round((exam-today)/(1000*60*60*24));
+  if(diff<0){ box.classList.remove('show'); return; }
+  box.classList.add('show');
+  document.getElementById('countdown-num').textContent=diff;
+  const parts=examDate.split('-');
+  document.getElementById('countdown-exam-date').textContent=
+    parts[0]+'年'+parseInt(parts[1])+'月'+parseInt(parts[2])+'日';
+  // 残り日数に応じて色変化
+  const numEl=document.getElementById('countdown-num');
+  if(diff<=7) numEl.style.color='var(--c4)';
+  else if(diff<=30) numEl.style.color='#ffd43b';
+  else numEl.style.color='var(--c1)';
+}
+
+// ================================================================
+// 起動
+// ================================================================
+init();
+</script>
+</body>
+</html>
